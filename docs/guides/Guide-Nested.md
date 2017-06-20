@@ -72,3 +72,43 @@ Now we have put one navigator inside another, and we can `navigate` between navi
 ```phone-example
 nested
 ```
+
+## Side Note - Nesting a Navigator in a Component
+Sometimes it is desirable to embed a navigator in a component. This is useful in cases where the navigator only takes up part of the screen. For the child navigator to be wired into the navigation tree, it needs the `navigation` property from the parent navigator.
+
+```js
+const SimpleApp = StackNavigator({
+  Home: { screen: EmbeddingScreen },
+  Chat: { screen: ChatScreen },
+});
+```
+In this case, the EmbeddingScreen is not a navigator, but it renders a navigator as part of its output.
+
+```js
+class EmbeddingScreen extends React.Component {
+  render() {
+    return (
+      <View>
+        <SomeComponent/>
+        <MainScreenNavigator/>
+      </View>
+    );
+  }
+}
+```
+
+To wire `MainScreenNavigator` into the navigation tree, we assign its `router` to the embedding component. This makes `EmbeddingScreen` "navigation aware", which makes the parent navigator pass the navigation object needed to pass to `MainScreenNavigator`.
+
+```js
+class EmbeddingScreen extends React.Component {
+  render() {
+    return (
+      <View>
+        <SomeComponent/>
+        <MainScreenNavigator navigation={this.props.navigation}/>
+      </View>
+    );
+  }
+}
+EmbeddingScreen.router = MainScreenNavigator.router
+```
